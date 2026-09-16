@@ -27,10 +27,12 @@ pnpm build
 
 ## 배포
 
-GitHub(`devchanz/growth-console`) push → Vercel 프로젝트 `devchanz-growth-console`가 자동 배포.
-`vercel`/`gh` CLI 없이 대시보드 연동만 사용 (자세한 절차는 `docs/DEPLOY.md`).
+완전 정적 사이트(`next.config.ts`의 `output: "export"`)로 빌드해 **Cloudflare Pages**에 배포한다
+(원래 Vercel 계획이었으나 기존 계정의 Fast Data Transfer 한도 초과로 전환 — 이유는 `docs/DEPLOY.md`
+참고). GitHub(`devchanz/growth-console`) push → Cloudflare Pages GitHub 연동이 자동 배포.
+`wrangler`/`gh` CLI 없이 대시보드 연동만 사용.
 
-`NEXT_PUBLIC_*` 환경변수는 빌드 타임에 인라인되므로, Vercel에서 값을 바꾸면 **Redeploy**가 필요하다.
+`NEXT_PUBLIC_*` 환경변수는 빌드 타임에 인라인되므로, 값을 바꾸면 재배포가 필요하다.
 
 ## 문서
 

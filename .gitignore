@@ -34,8 +34,8 @@ yarn-error.log*
 .env*
 !.env.example
 
-# vercel
-.vercel
+# cloudflare
+.wrangler/
 
 # QA screenshots (local-only, see scripts/qa/shoot.py)
 .qa-shots/

@@ -1,0 +1,234 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   RULED PLANE — design tokens
+   ==========================================================================
+
+   Thesis: the site is not a dashboard product, it's an instrument's output
+   sheet. Structure comes from rules (hairlines), ticks, and whitespace —
+   never cards, elevation, or fills. No radius, no box-shadow, anywhere.
+
+   Two planes, not two themes:
+   - [data-plane="report"] (default, :root) — light paper. Case-study pages.
+     Long-form Hangul reads worse light-on-dark at length, so text-heavy
+     pages are always light.
+   - [data-plane="console"] — dark instrument. Console home only.
+   Applied as a data attribute on a wrapper div (not <html>), so it's a
+   plain CSS selector with no FOUC/cookie machinery needed — see
+   src/app/[locale]/page.tsx.
+
+   Adopted verbatim from daejeon-random-trip/src/app/globals.css: the
+   three-tier rule hierarchy (there: line-soft/control/ink) and the
+   no-decorative-shadow contract. Everything else in this file is new —
+   wearing that project's own skin (warm cream, coral, DOSGothic) here would
+   be wearing a client's brand as a personal one.
+   ========================================================================== */
+
+:root {
+  /* ---- report plane (light paper) — also the fallback/default ---- */
+  --paper: #f4f3ec;
+  --surface-1: #f4f3ec;
+  --surface-2: #eae9e1;
+  --ink-1: #13140f; /* 16.64:1 on --paper */
+  --ink-2: #3d3f36; /*  9.62:1 */
+  --ink-3: #6b6d62; /*  4.73:1 */
+  --ink-4: #9b9c90; /*  2.50:1 — aria-hidden ghost numerals only, never live text */
+  --rule-1: #dfded4; /* passive chrome: dividers, table rules */
+  --rule-2: #c9c8bc; /* ordinary controls, borders, baselines */
+  --rule-3: #a8a89b; /* strong intent only: focus, active, crosshair, axis */
+  --signal: #5e6b00; /* chartreuse as text: 5.27:1 */
+  --signal-mark: #c7f04a; /* the lime itself, used as a fill with --ink-1 on top */
+  --flag: #c0402a; /* regression / drop-off / the failed experiment: 4.71:1 */
+  --good: #2e7d32;
+
+  /* data palette — validated with the dataviz skill's validator against
+     this exact --paper. Re-run scripts/validate_palette.js if any of these
+     or the surface colors change. See docs/DECISIONS.md ADR-006. */
+  --series-1: #2f6bbf; /* blue */
+  --series-2: #d2622a; /* orange */
+  --series-3: #1e9e86; /* teal */
+  --series-4: #7a5ad6; /* violet — scatter/bubble all-pairs cap: slots 1-3 only */
+  --series-5: #77860a; /* olive */
+
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-inout: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-count: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --measure-ko: 40rem; /* ~37 Hangul chars/line at 17px. Never exceeds 720px. */
+  --measure-en: 42rem;
+  --page-max: 1440px;
+}
+
+[data-plane="console"] {
+  --paper: #101210;
+  --surface-1: #101210;
+  --surface-2: #191b18;
+  --ink-1: #ecebe3; /* 15.73:1 */
+  --ink-2: #b4b5aa; /*  9.08:1 */
+  --ink-3: #85877b; /*  5.15:1 */
+  --ink-4: #5a5c52; /*  2.77:1 */
+  --rule-1: #24261f;
+  --rule-2: #33362d;
+  --rule-3: #4b4e43;
+  --signal: #c7f04a; /* here the lime IS the text/rule color: 14.33:1 */
+  --signal-mark: #c7f04a;
+  --flag: #f2714f; /* 6.50:1 */
+  --good: #5fbf63; /* 8.17:1 */
+
+  --series-1: #4e92e8;
+  --series-2: #d96f35;
+  --series-3: #1fa689;
+  --series-4: #9b7fea;
+  --series-5: #82920a;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-ink-1: var(--ink-1);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-4: var(--ink-4);
+  --color-rule-1: var(--rule-1);
+  --color-rule-2: var(--rule-2);
+  --color-rule-3: var(--rule-3);
+  --color-signal: var(--signal);
+  --color-signal-mark: var(--signal-mark);
+  --color-flag: var(--flag);
+  --color-good: var(--good);
+  --color-series-1: var(--series-1);
+  --color-series-2: var(--series-2);
+  --color-series-3: var(--series-3);
+  --color-series-4: var(--series-4);
+  --color-series-5: var(--series-5);
+
+  --font-sans: var(--font-sans-ko), -apple-system, BlinkMacSystemFont,
+    system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo,
+    Consolas, monospace;
+
+  --radius-none: 0px;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+* {
+  border-radius: 0 !important; /* the system's only radius, enforced */
+  box-shadow: none !important; /* no decorative shadow, no exceptions */
+}
+
+html {
+  background: var(--paper);
+  color-scheme: light;
+}
+[data-plane="console"] {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink-1);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.78;
+  letter-spacing: -0.003em;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+
+p {
+  text-wrap: pretty;
+  margin-block-end: 1.5rem;
+}
+
+/* Korean line-breaking: never mid-어절. The single most common Korean web
+   typography failure. `overflow-wrap` is the escape hatch for long URLs. */
+.prose-ko {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* Every measured digit — including inline inside Korean prose — is mono
+   tabular. This is the strongest identity signal in the type system:
+   9,218 in tabular mono reads as measured; the same number in bold sans
+   reads as marketing copy. See docs/DECISIONS.md. */
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.95em;
+  letter-spacing: -0.01em;
+}
+
+.mono-meta {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* ==========================================================================
+   Measurement motifs — five devices, used ONLY where named. See the design
+   spec: never behind Hangul paragraphs, at most one per component.
+   ========================================================================== */
+
+.graph-paper {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--rule-2) 45%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--rule-2) 45%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 8px 8px;
+}
+
+.rule-band {
+  border-top: 1px solid var(--rule-1);
+  position: relative;
+}
+.rule-band::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--rule-1) 0,
+    var(--rule-1) 1px,
+    transparent 1px,
+    transparent calc(var(--page-max) / 12)
+  );
+}
+
+/* ==========================================================================
+   Motion — see docs for the full rule list. No springs, no bounce, no
+   overshoot anywhere. Nothing exceeds 600ms. Information-bearing motion
+   survives reduced-motion; decorative motion does not.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
